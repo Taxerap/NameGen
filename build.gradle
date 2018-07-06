@@ -1,0 +1,20 @@
+apply plugin: "java"
+
+archivesBaseName = "2BNameGen"
+version = "1"
+
+repositories {
+	mavenCentral()
+	mavenLocal()
+}
+
+task run(type: JavaExec, dependsOn: classes) {
+    main = "Main"
+    classpath sourceSets.main.runtimeClasspath
+    classpath configurations.runtime
+}
+
+jar {
+	from configurations.compile.collect { zipTree it }
+	manifest.attributes "Main-Class": "net.npcthesb.namegen.NameGen"
+}
