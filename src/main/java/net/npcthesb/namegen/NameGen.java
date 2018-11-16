@@ -13,53 +13,37 @@ import java.util.stream.Stream;
 
 public class NameGen {
 
-	private static List<String> vowels = new ArrayList<String>();
-	private static List<String> consonants = new ArrayList<String>();
+	private static final String FILE_NAME = "2BNameGen-Result.txt";
+
+	private static List<Character> vowels = new ArrayList<>();
+	private static List<Character> consonants = new ArrayList<>();
 
 	private static void initializeLists() {
-		vowels = Stream.of("a", "e", "i", "o", "u").collect(Collectors.toList());
-		consonants = Stream.of("b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "q", "r", "s", "t", "v", "w",
-				"x", "y", "z").collect(Collectors.toList());
+		vowels = Stream.of('a', 'e', 'i', 'o', 'u').collect(Collectors.toList());
+		consonants = Stream.of('b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w',
+				'x', 'y', 'z').collect(Collectors.toList());
 	}
 
 	public static void main(String[] args) {
-		createFile("result.txt", true);
 		initializeLists();
 		int time = 0;
 		boolean isVowel = false;
-		List<String> name = new ArrayList<String>();
+		List<Character> name = new ArrayList<>();
+
 		do {
-			for (int i = 1; i <= ThreadLocalRandom.current().nextInt(5, 9 + 1); i++) {
-				if (!isVowel) {
-					name.add(consonants.get(ThreadLocalRandom.current().nextInt(consonants.size())));
-					isVowel = true;
-				} else {
+			for (int i = 1; i <= ThreadLocalRandom.current().nextInt(5, 10); i++)
+				if (isVowel) {
 					name.add(vowels.get(ThreadLocalRandom.current().nextInt(vowels.size())));
 					isVowel = false;
+				} else {
+					name.add(consonants.get(ThreadLocalRandom.current().nextInt(consonants.size())));
+					isVowel = true;
 				}
-			}
-			writeLine("result.txt", printlnList(name));
-			time += 1;
+			writeLine(FILE_NAME, listToString(name));
+			time++;
 			name.clear();
 			isVowel = false;
 		} while (time < 10);
-	}
-
-	private static void createFile(String path, boolean override) {
-		File f = new File(path);
-		File parent = f.getParentFile();
-		if (parent != null && !parent.exists())
-			parent.mkdirs();
-		if (f.exists())
-			if (override == true)
-				f.delete();
-			else
-				return;
-		try {
-			f.createNewFile();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 	private static void writeLine(String filePath, String msg) {
@@ -68,7 +52,7 @@ public class NameGen {
 		try {
 			out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(f, true)));
 			out.write(msg);
-			out.write("\r\n");
+			out.write((System.getProperty("os.name").toLowerCase().contains("win")) ? "\r\n" : "\n");
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
@@ -80,11 +64,10 @@ public class NameGen {
 		}
 	}
 
-	private static String printlnList(List<String> list) {
+	private static String listToString(List<Character> list) {
 		StringBuilder builder = new StringBuilder();
-		for (String value : list) {
+		for (char value : list)
 			builder.append(value);
-		}
 		return builder.toString();
 	}
 
